@@ -40,8 +40,8 @@ jobs:
       - name: Log into registry
         uses: docker/login-action@v3
         with:
-          username: ${{ on.workflow_call.secrets.docker_hub_user }}
-          password: ${{ on.workflow_call.secrets.docker_hub_password }}
+          username: ${{ secrets.docker_hub_user }}
+          password: ${{ secrets.docker_hub_password }}
 
       - name: Extract Docker metadata
         id: meta
@@ -49,15 +49,15 @@ jobs:
         with:
           tags: |
             type=sha,prefix=
-            type=raw,slim
-          images: ${{ on.workflow_call.inputs.name }}
+            type=raw,${{ inputs.tag }}
+          images: ${{ inputs.name }}
 
       - name: Build and push Docker image
         id: build-and-push
         uses: docker/build-push-action@v6     
         with:
           context: .
-          file: ${{ on.workflow_call.inputs.tag }}
+          file: ${{ inputs.file }}
           push: true
           tags: ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}
