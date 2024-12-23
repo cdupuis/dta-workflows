@@ -16,7 +16,11 @@ on:
       docker_hub_user:
         required: true  
       docker_hub_password:
-        required: true  
+        required: true
+      signing_key:
+        required: true
+      signing_key_passphrase:
+        required: true
 
 jobs:
   build:
@@ -54,9 +58,20 @@ jobs:
         with:
           context: .
           file: ${{ inputs.file }}
-          push: true
+          push: false
           tags: ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}
           sbom: generator=docker/scout-sbom-indexer:1
           platforms: linux/amd64,linux/arm64
-          
+          outputs: 
+            - type=oci,dest=./oci,compression=uncompressed
+
+      - name: Sign and attest Docker image
+        id: sign-and-attest
+        uses: cdupuis/dta-workflows@main
+        with:
+          image: ./oci
+          tags: ${{ steps.meta.outputs.tags }}
+          private-key: ${{ secrets.signing_key }}
+          private-key-passphrase: ${{ secrets.signing_key_passphrase }}
+          organization: ${{ secrets.docker_hub_user }}
