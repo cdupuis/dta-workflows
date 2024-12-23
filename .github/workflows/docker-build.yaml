@@ -73,4 +73,6 @@ jobs:
           tags: ${{ steps.meta.outputs.tags }}
           private-key: ${{ secrets.signing_key }}
           private-key-passphrase: ${{ secrets.signing_key_passphrase }}
+          registry-user-name: ${{ secrets.docker_hub_user }}
+          registry-password: ${{ secrets.docker_hub_password }}
           organization: ${{ secrets.docker_hub_user }}
