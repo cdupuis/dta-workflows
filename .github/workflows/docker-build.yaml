@@ -63,8 +63,7 @@ jobs:
           labels: ${{ steps.meta.outputs.labels }}
           sbom: generator=docker/scout-sbom-indexer:1
           platforms: linux/amd64,linux/arm64
-          outputs: 
-            - type=oci,dest=./oci,compression=uncompressed
+          outputs: type=oci,dest=./oci,compression=uncompressed
 
       - name: Sign and attest Docker image
         id: sign-and-attest
