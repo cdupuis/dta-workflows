@@ -77,6 +77,7 @@ jobs:
         uses: cdupuis/dta-workflows@main
         with:
           image: ./oci
+          file: ${{ inputs.file }}
           tags: ${{ steps.meta.outputs.tags }}
           private-key: ${{ secrets.signing_key }}
           private-key-passphrase: ${{ secrets.signing_key_passphrase }}
