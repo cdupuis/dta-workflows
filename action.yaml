@@ -1,0 +1,29 @@
+# https://help.github.com/en/articles/metadata-syntax-for-github-actions
+name: Docker Sign Attest
+description: Sign and attest attestations
+author: Docker
+
+inputs:
+  organization:
+    required: true
+    description: Namespace of the Docker organization
+  image:
+    required: true
+    description: Image to analyze
+  tags:
+    required: true
+    description: List of tags to add to the attestation
+  private-key:
+    description: Private key to sign the attestation
+    required: true
+  private-key-passphrase:
+    description: Passphrase for the private key
+    required: true
+
+runs:
+  using: node20
+  main: index.js
+
+branding:
+  icon: shield
+  color: gray-dark
