@@ -17,10 +17,10 @@ on:
         required: true  
       docker_hub_password:
         required: true
-      signing_key:
-        required: true
-      signing_key_passphrase:
-        required: true
+      #signing_key:
+      #  required: true
+      #signing_key_passphrase:
+      #  required: true
 
 jobs:
   build:
