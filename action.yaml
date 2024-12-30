@@ -1,9 +1,12 @@
 # https://help.github.com/en/articles/metadata-syntax-for-github-actions
-name: Docker Sign Attest
-description: Sign and attest attestations
+name: Docker Sign Attest Verify
+description: Sign, attest and verify attestations
 author: Docker
 
 inputs:
+  stage:
+    required: true
+    description: Stage of the build
   organization:
     required: true
     description: Namespace of the Docker organization
@@ -14,14 +17,9 @@ inputs:
     required: true
     description: List of tags to add to the attestation
   file:
-    required: true
+    required: false
     description: Build file
-  private-key:
-    description: Private key to sign the attestation
-    required: true
-  private-key-passphrase:
-    description: Passphrase for the private key
-    required: true
+
 
 runs:
   using: node20
