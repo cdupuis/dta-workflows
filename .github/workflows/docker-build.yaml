@@ -3,12 +3,6 @@ name: build-push
 on:
   workflow_call:
     inputs:
-      name:
-        required: true
-        type: string
-      tag: 
-        required: true
-        type: string
       file:
         required: true
         type: string
@@ -46,12 +40,10 @@ jobs:
 
       - name: Extract Docker metadata
         id: meta
-        uses: docker/metadata-action@v5
+        uses: cdupuis/dta-workflows@main
         with:
-          tags: |
-            type=sha,prefix=
-            type=raw,${{ inputs.tag }}
-          images: ${{ inputs.name }}
+          stage: metadata-attest
+          file: ${{ inputs.file }}
 
       - name: Build Docker image
         id: build-and-push
@@ -60,10 +52,9 @@ jobs:
           context: .
           file: ${{ inputs.file }}
           push: false
-          tags: ${{ steps.meta.outputs.tags }}
-          labels: ${{ steps.meta.outputs.labels }}
+          tags: ${{ DTA_IMAGE_TAGS }}
           sbom: generator=docker/scout-sbom-indexer:1
-          platforms: linux/amd64,linux/arm64
+          platforms: ${{ DTA_IMAGE_PLATFORMS }}
           outputs: type=oci,dest=./oci,tar=false
 
       - name: Log into refrerrer registry
@@ -80,7 +71,7 @@ jobs:
           stage: sign-attest
           image: ./oci
           file: ${{ inputs.file }}
-          tags: ${{ steps.meta.outputs.tags }}
+          tags: ${{ DTA_IMAGE_TAGS }}
           organization: ${{ secrets.docker_hub_user }}
 
       - name: Verify and attest Docker image
@@ -88,6 +79,6 @@ jobs:
         uses: cdupuis/dta-workflows@main
         with:
           stage: verify-attest
-          image: ${{ fromJson(steps.meta.outputs.json).tags[1] }}
-          tags: ${{ fromJson(steps.meta.outputs.json).tags[0] }}
+          image: ${{ DTA_IMAGE_IMAGE }}
+          tags: ${{ DTA_IMAGE_TAGS }}
           organization: ${{ secrets.docker_hub_user }}
