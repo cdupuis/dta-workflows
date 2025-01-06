@@ -54,7 +54,7 @@ jobs:
           push: false
           tags: ${{ DTA_IMAGE_TAGS }}
           sbom: generator=docker/scout-sbom-indexer:1
-          platforms: ${{ DTA_IMAGE_PLATFORMS }}
+          platforms: ${{ env.DTA_IMAGE_PLATFORMS }}
           outputs: type=oci,dest=./oci,tar=false
 
       - name: Log into refrerrer registry
@@ -71,7 +71,7 @@ jobs:
           stage: sign-attest
           image: ./oci
           file: ${{ inputs.file }}
-          tags: ${{ DTA_IMAGE_TAGS }}
+          tags: ${{ env.DTA_IMAGE_TAGS }}
           organization: ${{ secrets.docker_hub_user }}
 
       - name: Verify and attest Docker image
@@ -79,6 +79,6 @@ jobs:
         uses: cdupuis/dta-workflows@main
         with:
           stage: verify-attest
-          image: ${{ DTA_IMAGE_IMAGE }}
-          tags: ${{ DTA_IMAGE_TAGS }}
+          image: ${{ env.DTA_IMAGE_IMAGE }}
+          tags: ${{ env.DTA_IMAGE_TAGS }}
           organization: ${{ secrets.docker_hub_user }}
