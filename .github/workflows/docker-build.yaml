@@ -6,11 +6,20 @@ on:
       file:
         required: true
         type: string
+      dockerfile:
+        required: false
+        type: string
+      attestations:
+        required: false
+        type: string
     secrets:
       docker_hub_user:
         required: true  
       docker_hub_password:
         required: true
+
+env:
+  dockerfile: ${{ inputs.dockerfile || inputs.file }}
 
 jobs:
   build:
@@ -39,7 +48,7 @@ jobs:
           password: ${{ secrets.docker_hub_password }}
 
       - name: Extract Docker metadata
-        id: meta
+        id: metadata
         uses: cdupuis/dta-workflows@main
         with:
           stage: metadata-attest
@@ -50,7 +59,7 @@ jobs:
         uses: docker/build-push-action@v6     
         with:
           context: .
-          file: ${{ inputs.file }}
+          file: ${{ env.dockerfile }}
           push: false
           tags: ${{ env.DTA_IMAGE_TAGS }}
           sbom: generator=docker/scout-sbom-indexer:1
@@ -65,17 +74,28 @@ jobs:
           password: ${{ secrets.docker_hub_password }}
       
       - name: Sign and attest Docker image
-        id: sign-and-attest
+        id: sign-attest
         uses: cdupuis/dta-workflows@main
         with:
           stage: sign-attest
           image: ./oci
-          file: ${{ inputs.file }}
+          file: ${{ env.dockerfile }}
           tags: ${{ env.DTA_IMAGE_TAGS }}
           organization: ${{ secrets.docker_hub_user }}
 
+      - name: Sign and attest in-toto statements
+        if: ${{ inputs.attestations != '' }}
+        id: predicate-attest
+        uses: cdupuis/dta-workflows@main
+        with:
+          stage: predicate-attest
+          image: ${{ env.DTA_IMAGE_IMAGE }}
+          tags: ${{ env.DTA_IMAGE_TAGS }}
+          organization: ${{ secrets.docker_hub_user }}
+          intoto-statements: ${{ inputs.attestations }}
+
       - name: Verify and attest Docker image
-        id: verify-and-attest
+        id: verify-attest
         uses: cdupuis/dta-workflows@main
         with:
           stage: verify-attest

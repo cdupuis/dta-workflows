@@ -19,7 +19,9 @@ inputs:
   file:
     required: false
     description: Build file
-
+  intoto-statements:
+    required: false
+    description: in-toto statements
 
 runs:
   using: node20
