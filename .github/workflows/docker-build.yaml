@@ -9,7 +9,7 @@ on:
       dockerfile:
         required: false
         type: string
-      attestations:
+      intoto-statements:
         required: false
         type: string
     secrets:
@@ -84,7 +84,7 @@ jobs:
           organization: ${{ secrets.docker_hub_user }}
 
       - name: Sign and attest in-toto statements
-        if: ${{ inputs.attestations != '' }}
+        if: ${{ inputs.intoto-statements != '' }}
         id: predicate-attest
         uses: cdupuis/dta-workflows@main
         with:
@@ -92,7 +92,7 @@ jobs:
           image: ${{ env.DTA_IMAGE_IMAGE }}
           tags: ${{ env.DTA_IMAGE_TAGS }}
           organization: ${{ secrets.docker_hub_user }}
-          intoto-statements: ${{ inputs.attestations }}
+          intoto-statements: ${{ inputs.intoto-statements }}
 
       - name: Verify and attest Docker image
         id: verify-attest
