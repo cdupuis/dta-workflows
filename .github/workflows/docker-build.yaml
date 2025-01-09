@@ -79,7 +79,7 @@ jobs:
         uses: cdupuis/dta-workflows@main
         with:
           stage: predicate-attest
-          image: ${{ env.DTA_IMAGE_IMAGE }}
+          image: ./oci
           tags: ${{ env.DTA_IMAGE_TAGS }}
           organization: ${{ secrets.docker_hub_user }}
           intoto-statements: ${{ inputs.intoto-statements }}
