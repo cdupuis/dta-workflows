@@ -72,16 +72,6 @@ jobs:
           registry: registry.scout.docker.com
           username: ${{ secrets.docker_hub_user }}
           password: ${{ secrets.docker_hub_password }}
-      
-      - name: Sign and attest Docker image
-        id: sign-attest
-        uses: cdupuis/dta-workflows@main
-        with:
-          stage: sign-attest
-          image: ./oci
-          file: ${{ env.dockerfile }}
-          tags: ${{ env.DTA_IMAGE_TAGS }}
-          organization: ${{ secrets.docker_hub_user }}
 
       - name: Sign and attest in-toto statements
         if: ${{ inputs.intoto-statements != '' }}
@@ -93,6 +83,16 @@ jobs:
           tags: ${{ env.DTA_IMAGE_TAGS }}
           organization: ${{ secrets.docker_hub_user }}
           intoto-statements: ${{ inputs.intoto-statements }}
+
+      - name: Sign and attest Docker image
+        id: sign-attest
+        uses: cdupuis/dta-workflows@main
+        with:
+          stage: sign-attest
+          image: ./oci
+          file: ${{ env.dockerfile }}
+          tags: ${{ env.DTA_IMAGE_TAGS }}
+          organization: ${{ secrets.docker_hub_user }}
 
       - name: Verify and attest Docker image
         id: verify-attest
