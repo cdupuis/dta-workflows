@@ -64,7 +64,7 @@ jobs:
           tags: ${{ env.DTA_IMAGE_TAGS }}
           sbom: generator=docker/scout-sbom-indexer:1
           platforms: ${{ env.DTA_IMAGE_PLATFORMS }}
-          outputs: type=oci,dest=./oci,tar=false,compression=gzip,compression-level=9,force-compression=true
+          outputs: type=oci,dest=./oci,tar=false,compression=gzip,compression-level=9,force-compression=true,rewrite-timestamp=true
           build-args: SOURCE_DATE_EPOCH=0
 
       - name: Log into refrerrer registry
