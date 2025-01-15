@@ -22,6 +22,10 @@ inputs:
   intoto-statements:
     required: false
     description: in-toto statements
+  write-comment:
+    required: false
+    description: suppress writing of comments
+    default: false
 
 runs:
   using: node20
