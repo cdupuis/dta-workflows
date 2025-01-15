@@ -74,7 +74,7 @@ jobs:
         uses: docker/scout-action@v1
         with:
           command: compare
-          image: oci://./oci
+          image: oci-dir://./oci
           to: ${{ env.DTA_IMAGE_IMAGE }}
           platform: linux/amd64
           write-comment: false
