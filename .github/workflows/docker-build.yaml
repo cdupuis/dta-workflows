@@ -97,12 +97,14 @@ jobs:
           organization: ${{ secrets.docker_hub_user }}
 
       - name: Generate artifact attestation
+        if: ${{ env.DTA_IMAGE_CHANGED == 'true' }}
         uses: actions/attest-build-provenance@v2
         with:
           subject-name: ${{ env.DTA_IMAGE_REPO }}
           subject-digest: ${{ steps.build-oci.outputs.digest }}        
 
       - name: Verify and attest Docker image
+        if: ${{ env.DTA_IMAGE_CHANGED == 'true' }}
         id: verify-attest
         uses: cdupuis/dta-workflows@main
         with:
