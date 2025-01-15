@@ -68,6 +68,11 @@ jobs:
           outputs: type=oci,dest=./oci,tar=false,compression=zstd,compression-level=22,force-compression=true,rewrite-timestamp=true
           build-args: SOURCE_DATE_EPOCH=0
 
+      - name: Replace tags in index.json
+        if: ${{ github.event_name == 'pull_request' }}
+        run: |
+          sed -i 's#"org\.opencontainers\.image\.ref\.name": "[^"]*"#"org.opencontainers.image.ref.name": "${{ env.DTA_IMAGE_IMAGE }}"#' index.json
+
       - name: Compare Docker image
         if: ${{ github.event_name == 'pull_request' }}
         id: compare-oci
