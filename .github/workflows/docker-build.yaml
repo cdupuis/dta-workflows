@@ -71,7 +71,7 @@ jobs:
       - name: Replace tags in index.json
         if: ${{ github.event_name == 'pull_request' }}
         run: |
-          sed -i 's#"org\.opencontainers\.image\.ref\.name": "[^"]*"#"org.opencontainers.image.ref.name": "${{ env.DTA_IMAGE_IMAGE }}"#' index.json
+          sed -i 's#"org\.opencontainers\.image\.ref\.name": "[^"]*"#"org.opencontainers.image.ref.name": "${{ env.DTA_IMAGE_IMAGE }}"#' ./oci/index.json
 
       - name: Compare Docker image
         if: ${{ github.event_name == 'pull_request' }}
