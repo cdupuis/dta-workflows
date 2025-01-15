@@ -72,14 +72,19 @@ jobs:
         if: ${{ github.event_name == 'pull_request' }}
         run: |
           sed -i 's#"org\.opencontainers\.image\.ref\.name":"[^"]*"#"org.opencontainers.image.ref.name":"${{ env.DTA_IMAGE_IMAGE }}"#' ./oci/index.json
-          cat ./oci/index.json
-
+          
           curl -sSfL https://raw.githubusercontent.com/docker/scout-cli/main/install.sh | sh -s --
+
+          echo ""
+          echo ""
 
           tags=$(echo "${{ env.DTA_IMAGE_TAGS }}" | tr -d '\n' | tr -d ' ')
           IFS=',' read -ra TAGS <<< "$tags"
           for tag in "${TAGS[@]}"; do
+            echo "Comparing to ${tag}"
+            echo "-----------------------------------------------------------------------"
             docker scout compare oci-dir://./oci --to ${tag} --ignore-unchanged || true
+            echo "-----------------------------------------------------------------------"
           done
         
       - name: Log into refrerrer registry
