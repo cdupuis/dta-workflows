@@ -30,6 +30,7 @@ jobs:
       contents: read
       packages: write
       id-token: write
+      attestations: write
 
     steps:
       - name: Checkout repository
@@ -55,7 +56,7 @@ jobs:
           file: ${{ inputs.file }}
 
       - name: Build Docker image
-        id: build-and-push
+        id: build-oci
         uses: docker/build-push-action@v6     
         with:
           context: .
@@ -94,6 +95,12 @@ jobs:
           file: ${{ env.dockerfile }}
           tags: ${{ env.DTA_IMAGE_TAGS }}
           organization: ${{ secrets.docker_hub_user }}
+
+      - name: Generate artifact attestation
+        uses: actions/attest-build-provenance@v2
+        with:
+          subject-name: ${{ env.DTA_IMAGE_REPO }}
+          subject-digest: ${{ steps.build-oci.outputs.digest }}        
 
       - name: Verify and attest Docker image
         id: verify-attest
