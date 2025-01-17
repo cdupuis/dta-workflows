@@ -81,17 +81,17 @@ jobs:
           docker run --rm -v ./databases:/var/lib/clamav -v .:/scandir -v ./logs:/logs clamav/clamav:stable clamscan /scandir --log /logs/clamav.log --exclude-dir /scandir/databases --recursive -a -v
 
           # generate in-toto statement
-          cat > clamav-scan.json << 'EOF'
+          cat << EOF > clamav-scan.json 
           {
-            "_type": "https://in-toto.io/Statement/v0.1",
-            "subject": [],
-            "predicateType": "https://clamav.net/scan/v1",
-            "predicate": {
-              "scanner": {
-                "uri": "clamav/clamav:stable",
-                "report": "$(cat ./logs/clamav.log | base64 -w 0)"
+              "_type": "https://in-toto.io/Statement/v0.1",
+              "subject": [],
+              "predicateType": "https://clamav.net/scan/v1",
+              "predicate": {
+                  "scanner": {
+                  "uri": "clamav/clamav:stable",
+                  "report": "$(cat ./logs/clamav.log | base64 -w 0)"
+                  }
               }
-            }
           }
           EOF          
 
