@@ -78,9 +78,10 @@ jobs:
       - name: Run clamav scan
         run: |
           # run clamav scan; fail if malware/virus is found
-          docker run --rm -v ./databases:/var/lib/clamav -v .:/scandir -v ./tmp:/logs clamav/clamav:stable clamscan /scandir --log /logs/clamav.log --exclude-dir /scandir/databases --recursive -a -v
+          docker run --rm -v ./databases:/var/lib/clamav -v .:/scandir -v ./tmp:/logs clamav/clamav:stable clamscan /scandir/oci --log /logs/clamav.log --exclude-dir /scandir/databases --recursive -a -v
 
           # echo
+          ls -la ./tmp
           echo "$(cat ./tmp/clamav.log)"
 
           # generate in-toto statement
