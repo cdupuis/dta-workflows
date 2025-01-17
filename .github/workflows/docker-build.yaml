@@ -67,6 +67,33 @@ jobs:
           platforms: ${{ env.DTA_IMAGE_PLATFORMS }}
           outputs: type=oci,dest=./oci,tar=false,compression=zstd,compression-level=22,force-compression=true,rewrite-timestamp=true
           build-args: SOURCE_DATE_EPOCH=0
+      
+      - name: Restore clamav databases cache
+        uses: actions/cache/restore@v4
+        with:
+          path: |
+            ./databases
+          key: clamav-db
+
+      - name: Run clamav scan
+        run: |
+          # run clamav scan; fail if malware/virus is found
+          docker run --rm -v ./databases:/var/lib/clamav -v .:/scandir -v ./logs:/logs clamav/clamav:stable clamscan /scandir --log /logs/clamav.log --exclude-dir /scandir/databases --recursive -a -v
+
+          # generate in-toto statement
+          cat > clamav-scan.json << 'EOF'
+          {
+            "_type": "https://in-toto.io/Statement/v0.1",
+            "subject": []
+            "predicateType": "https://clamav.net/scan/v1",
+            "predicate": {
+              "scanner": {
+                "uri": "clamav/clamav:stable",
+                "report": "$(cat ./logs/clamav.log | base64 -w 0)"
+              }
+            }
+          }
+          EOF          
 
       - name: Compare Docker image
         if: ${{ github.event_name == 'pull_request' }}
@@ -96,7 +123,7 @@ jobs:
           password: ${{ secrets.docker_hub_password }}
 
       - name: Sign and attest in-toto statements
-        if: ${{ inputs.intoto-statements != '' && github.event_name != 'pull_request' }}
+        if: ${{ github.event_name != 'pull_request' }}
         id: predicate-attest
         uses: cdupuis/dta-workflows@main
         with:
@@ -104,7 +131,7 @@ jobs:
           image: ./oci
           tags: ${{ env.DTA_IMAGE_TAGS }}
           organization: ${{ secrets.docker_hub_user }}
-          intoto-statements: ${{ inputs.intoto-statements }}
+          intoto-statements: ${{ inputs.intoto-statements }},clamav-scan.json
 
       - name: Sign and attest Docker image
         if: ${{ github.event_name != 'pull_request' }}
