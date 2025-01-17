@@ -84,7 +84,7 @@ jobs:
           cat > clamav-scan.json << 'EOF'
           {
             "_type": "https://in-toto.io/Statement/v0.1",
-            "subject": []
+            "subject": [],
             "predicateType": "https://clamav.net/scan/v1",
             "predicate": {
               "scanner": {
