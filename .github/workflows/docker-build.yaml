@@ -78,7 +78,10 @@ jobs:
       - name: Run clamav scan
         run: |
           # run clamav scan; fail if malware/virus is found
-          docker run --rm -v ./databases:/var/lib/clamav -v .:/scandir -v ./logs:/logs clamav/clamav:stable clamscan /scandir --log /logs/clamav.log --exclude-dir /scandir/databases --recursive -a -v
+          docker run --rm -v ./databases:/var/lib/clamav -v .:/scandir -v ./tmp:/logs clamav/clamav:stable clamscan /scandir --log /logs/clamav.log --exclude-dir /scandir/databases --recursive -a -v
+
+          # echo
+          echo "$(cat ./tmp/clamav.log)"
 
           # generate in-toto statement
           cat << EOF > clamav-scan.json 
@@ -89,11 +92,14 @@ jobs:
               "predicate": {
                   "scanner": {
                   "uri": "clamav/clamav:stable",
-                  "report": "$(cat ./logs/clamav.log | base64 -w 0)"
+                  "report": "$(cat ./tmp/clamav.log | base64 -w 0)"
                   }
               }
           }
-          EOF          
+          EOF
+
+          echo "$(cat clamav-scan.json)"
+
 
       - name: Compare Docker image
         if: ${{ github.event_name == 'pull_request' }}
