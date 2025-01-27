@@ -38,6 +38,9 @@ jobs:
 
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v3 
+        with:
+          driver-opts: 
+            - image=moby/buildkit:latest
 
       - name: Set up QEMU
         uses: docker/setup-qemu-action@v3        
@@ -62,8 +65,8 @@ jobs:
           DOCKER_BUILD_RECORD_UPLOAD: false
           DOCKER_BUILD_SUMMARY: false
         with:
-          context: .
-          file: ${{ env.dockerfile }}
+          context: .out       
+          file: ${{ env.DTA_FILE }}
           push: false
           tags: ${{ env.DTA_IMAGE_TAGS }}
           sbom: generator=docker/scout-sbom-indexer:1
@@ -153,12 +156,12 @@ jobs:
           tags: ${{ env.DTA_IMAGE_TAGS }}
           organization: ${{ secrets.docker_hub_user }}
 
-      - name: Generate artifact attestation
-        if: ${{ env.DTA_IMAGE_CHANGED == 'true' && github.event_name != 'pull_request' }}
-        uses: actions/attest-build-provenance@v2
-        with:
-          subject-name: ${{ env.DTA_IMAGE_REPO }}
-          subject-digest: ${{ steps.build-oci.outputs.digest }}        
+      #- name: Generate artifact attestation
+      #  if: ${{ env.DTA_IMAGE_CHANGED == 'true' && github.event_name != 'pull_request' }}
+      #  uses: actions/attest-build-provenance@v2
+      #   with:
+      #     subject-name: ${{ env.DTA_IMAGE_REPO }}
+      #     subject-digest: ${{ steps.build-oci.outputs.digest }}        
 
       - name: Verify and attest Docker image
         if: ${{ env.DTA_IMAGE_CHANGED == 'true' && github.event_name != 'pull_request' }}
