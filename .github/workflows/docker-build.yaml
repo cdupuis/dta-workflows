@@ -64,8 +64,8 @@ jobs:
           DOCKER_BUILD_RECORD_UPLOAD: false
           DOCKER_BUILD_SUMMARY: false
         with:
-          context: .out       
-          file: ${{ env.DTA_FILE }}
+          context: .       
+          file: ${{ env.dockerfile }}
           push: false
           tags: ${{ env.DTA_IMAGE_TAGS }}
           sbom: generator=docker/scout-sbom-indexer:1
