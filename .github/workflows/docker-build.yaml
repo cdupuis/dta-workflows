@@ -17,6 +17,7 @@ on:
 
 env:
   dockerfile: ${{ inputs.dockerfile || inputs.file }}
+  organization: dockertrustedartifacts
 
 jobs:
   build:
@@ -138,7 +139,7 @@ jobs:
           stage: predicate-attest
           image: ./oci
           tags: ${{ env.DTA_IMAGE_TAGS }}
-          organization: ${{ secrets.docker_hub_user }}
+          organization: ${{ env.organization }}
           intoto-statements: ${{ env.DTA_INTOTO_STATEMENTS }},clamav-scan.json
 
       - name: Sign and attest Docker image
@@ -150,7 +151,7 @@ jobs:
           image: ./oci
           file: ${{ env.dockerfile }}
           tags: ${{ env.DTA_IMAGE_TAGS }}
-          organization: ${{ secrets.docker_hub_user }}
+          organization: ${{ env.organization }}
 
       #- name: Generate artifact attestation
       #  if: ${{ env.DTA_IMAGE_CHANGED == 'true' && github.event_name != 'pull_request' }}
@@ -167,4 +168,4 @@ jobs:
           stage: verify-attest
           image: ${{ env.DTA_IMAGE_IMAGE }}
           tags: ${{ env.DTA_IMAGE_TAGS }}
-          organization: ${{ secrets.docker_hub_user }}
+          organization: ${{ env.organization }}
