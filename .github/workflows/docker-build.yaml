@@ -9,9 +9,6 @@ on:
       dockerfile:
         required: false
         type: string
-      intoto-statements:
-        required: false
-        type: string
     secrets:
       docker_hub_user:
         required: true  
@@ -142,7 +139,7 @@ jobs:
           image: ./oci
           tags: ${{ env.DTA_IMAGE_TAGS }}
           organization: ${{ secrets.docker_hub_user }}
-          intoto-statements: ${{ inputs.intoto-statements }},clamav-scan.json
+          intoto-statements: ${{ env.DTA_INTOTO_STATEMENTS }},clamav-scan.json
 
       - name: Sign and attest Docker image
         if: ${{ github.event_name != 'pull_request' }}
