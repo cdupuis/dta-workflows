@@ -19,6 +19,9 @@ inputs:
   file:
     required: false
     description: Build file
+  intoto-statements:
+    required: false
+    description: in-toto statements
   write-comment:
     required: false
     description: suppress writing of comments
